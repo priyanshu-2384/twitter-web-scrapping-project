@@ -10,6 +10,11 @@
             // Show loading text
             document.getElementById("result").innerHTML = "Running the script... Please wait. Would take just 30 seconds of your precious time!";
 
+// After a delay (simulate script execution or any async task)
+setTimeout(function() {
+    document.getElementById("result").innerHTML = "Loading...";
+}, 5000);  // Change the 3000 value (milliseconds) as per the timing you want between messages
+
             // Send a request to the backend to run the Selenium script
             fetch('/run_script')
                 .then(response => response.json())

@@ -9,6 +9,10 @@ import random
 from datetime import datetime
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 app = Flask(__name__)
 
@@ -48,8 +52,13 @@ def index():
 def run_script():
     proxy_ip = get_proxy_ip()
 
-    # Initialize Selenium with ChromeDriver and ScraperAPI settings
-    service = Service("C:/Users/Priyanshu Chaudhary/Desktop/chromedriver-win64/chromedriver.exe")
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Run in headless mode
+    chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration
+    chrome_options.add_argument('--no-sandbox')  # Bypass OS security model
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
+
+    service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
