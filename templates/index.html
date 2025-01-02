@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium Script Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function runScript() {
+            // Show loading text
+            document.getElementById("result").innerHTML = "Running the script... Please wait. Would take just 30 seconds of your precious time!";
+
+            // Send a request to the backend to run the Selenium script
+            fetch('/run_script')
+                .then(response => response.json())
+                .then(data => {
+                    // Log the data to console to verify it is returned correctly
+                    console.log(data);
+
+                    // Display the result in the format specified
+                    document.getElementById("result").innerHTML = `
+                        <h2>These are the most happening topics as on ${data.date_time}</h2>
+                        <ul>
+                            <li>1) ${data.trend1}</li>
+                            <li>2) ${data.trend2}</li>
+                            <li>3) ${data.trend3}</li>
+                            <li>4) ${data.trend4}</li>
+                            <li>5) ${data.trend5}</li>
+                        </ul>
+                        <br>
+                        <p>The IP address used for this query was <i>${data.ip_address}</i>.</p>
+                        <br>
+                        <h3>Here’s a JSON extract of this record from the MongoDB:</h3>
+                        <pre>${JSON.stringify(data.record, null, 4)}</pre>
+                        <button onclick="runScript()">Click here to run the query again</button>
+                    `;
+                })
+                .catch(error => {
+                    // Log error and display in the UI
+                    console.error("Error:", error);
+                    document.getElementById("result").innerHTML = `Error: ${error}`;
+                });
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Twitter Trends (Task By STIR)</h1>
+        <button onclick="runScript()">Click here to run the script</button>
+        <div id="result"></div>
+    </div>
+
+</body>
+</html>
