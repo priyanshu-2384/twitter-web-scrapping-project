@@ -13,11 +13,21 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
+import chromedriver_autoinstaller
 
 app = Flask(__name__)
 
+
+chromedriver_autoinstaller.install()
+
 # Database connection
-client = pymongo.MongoClient("mongodb://localhost:27017/")
+atlasString = "mongodb+srv://priyanshu23:kfvjwojefedjwfsbw213@cluster0.vdb21h5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = pymongo.MongoClient(atlasString)
 db = client["twitter_trends"]
 collection = db["trending_topics"]
 
@@ -51,16 +61,26 @@ def index():
 @app.route('/run_script')
 def run_script():
     proxy_ip = get_proxy_ip()
-
+    print("Helloooooooooooo")
+    #cloud
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Ensures Chrome runs without UI
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")  # Disables GPU acceleration (not needed in headless)
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")  # Bypass OS-level security
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
+    chrome_options.add_argument(f'--proxy-server={proxy}')  # Add proxy settings
 
-    service = Service(ChromeDriverManager().install())
+    # Initialize Selenium WebDriver
+    driver = webdriver.Chrome(options=chrome_options)
 
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    #local
+    # chrome_options = Options()
+    # chrome_options.add_argument(f'--proxy-server={proxy}')
+
+    # # Initialize Selenium with ChromeDriver and ScraperAPI settings
+    # service = Service("C:/Users/Priyanshu Chaudhary/Desktop/chromedriver-win64/chromedriver.exe")
+
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
         # Open Twitter login page
@@ -99,9 +119,10 @@ def run_script():
             elements = sub_div.find_elements(By.XPATH, './/div[@style="text-overflow: unset; color: rgb(231, 233, 234);"]')
             for element in elements:
                 trends.append(element.text)
-
+        
         # Get the top 5 trends
-        top_trends = trends[:5]
+        length = min(5, len(trends))
+        top_trends = trends[:length]
 
         # Create a unique record with the scraped data, timestamp, and proxy IP address
         unique_id = str(uuid.uuid4())
@@ -142,4 +163,5 @@ def run_script():
         driver.quit()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
