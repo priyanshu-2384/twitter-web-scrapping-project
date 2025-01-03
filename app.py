@@ -53,14 +53,13 @@ def run_script():
     proxy_ip = get_proxy_ip()
 
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in headless mode (without GUI)
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-    chrome_options.add_argument("--no-sandbox")  # Disable sandboxing for security
+    chrome_options.add_argument("--headless")  # Ensures Chrome runs without UI
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")  # Disables GPU acceleration (not needed in headless)
 
-    # Path to the ChromeDriver executable
-    chrome_driver_path = "/usr/local/bin/chromedriver"  # ChromeDriver path for Render environment
-    service = Service(chrome_driver_path)
-    
+    service = Service(ChromeDriverManager().install())
+
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
